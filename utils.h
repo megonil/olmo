@@ -1,5 +1,8 @@
-#ifndef sack_utils_h
-#define sack_utils_h
+#ifndef olmo_utils_h
+#define olmo_utils_h
+
+#include "flag.h"
+
 #include <stdlib.h>
 
 #define fprintfln(file, fmt, ...) fprintf (file, fmt "\n", ##__VA_ARGS__)
@@ -22,4 +25,16 @@
 #define warn(fmt, ...) eprintln ("warn: " fmt, ##__VA_ARGS__)
 #define note(fmt, ...) println ("note: " fmt, ##__VA_ARGS__)
 
-#endif // !sack_utils_h
+#define debug(...)                                                        \
+	if (getflag (FlagDebug))                                              \
+		{                                                                 \
+			printf (##__VA_ARGS__);                                       \
+		}
+
+#define debugln(fmt, ...)                                                 \
+	if (getflag (FlagDebug))                                              \
+		{                                                                 \
+			println (fmt, ##__VA_ARGS__);                                 \
+		}
+
+#endif // !olmo_utils_h

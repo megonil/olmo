@@ -1,2 +1,6 @@
 .cache
 build
+
+subprojects/Unity-*
+subprojects/packagecache
+subprojects/.wraplock

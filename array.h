@@ -1,5 +1,5 @@
-#ifndef dynarray_h
-#define dynarray_h
+#ifndef olmo_array_h
+#define olmo_array_h
 
 #include <stddef.h>
 
@@ -51,4 +51,4 @@ array_free (void* array);
 void
 array_print (void* array, PrintFunction fn);
 
-#endif // !dynarray_h
+#endif // !olmo_array_h
