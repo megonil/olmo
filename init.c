@@ -11,7 +11,7 @@ void __attribute__ ((constructor))
 init_keywords ()
 {
 #define X(Type, Str) {Str, Type},
-	TableInitList (Keyword, &keywords, KEYWORDS);
+	TableInitList (Keyword, &keywords, KEYWORDS_SPEC KEYWORDS);
 #undef X
 }
 

@@ -59,4 +59,16 @@ test_lexer ()
 	update ();
 
 	TEST_ASSERT_EQUAL_INT (1, token.lit.value.i);
+	endtest ();
+	starttest ("for");
+
+	TEST_ASSERT_EQUAL_INT (TFor, token.type);
+	endtest ();
+
+	starttest ("abcdef");
+
+	TEST_ASSERT_EQUAL_INT (TName, token.type);
+	TEST_ASSERT_EQUAL_STRING ("abcdef", token.lit.value.t);
+
+	endtest ();
 }

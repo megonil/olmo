@@ -132,10 +132,24 @@ ichar (Lexer* lexer)
 	return token_c (val, lexer->line);
 }
 
+/// same warning as for the text() function
 static Token
 ident (Lexer* lexer)
 {
-	unimplemented ("keywords lexing");
+	while (isalpha (*cur) || *cur == '_')
+		{
+			save (lexer);
+		}
+
+	TokenType* type = KeywordTableGet (&keywords, lexer->buffer);
+	if (type != NULL)
+		{
+			return token (*type);
+		}
+	else
+		{
+			return token_n (lexer->buffer, lexer->line);
+		}
 }
 
 static void

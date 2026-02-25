@@ -9,7 +9,6 @@ deps = [m_dep]
 
 source = files(
 	'array.c',
-	'exec.c',
 	'init.c',
 	'lexer.c',
 	'parser.c',

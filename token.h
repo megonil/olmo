@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+#define KEYWORDS_SPEC                                                     \
+	X (TLiteral, "True")                                                  \
+	X (TLiteral, "False")
+
 #define KEYWORDS                                                          \
 	X (TFun, "fun")                                                       \
 	X (TRet, "ret")                                                       \
@@ -16,6 +20,7 @@
 	KEYWORDS                                                              \
 	X (TArrow, "->")                                                      \
 	X (TType, "<type>")                                                   \
+	X (TName, "<name>")                                                   \
 	X (TLiteral, "<literal>")                                             \
 	X (TEOF, "EOF")
 
@@ -47,6 +52,7 @@ typedef enum
 	LitFloat,
 	LitDouble,
 	LitText,
+	LitName,
 } LiteralType;
 
 typedef union
@@ -87,7 +93,14 @@ typedef struct
 #define token_d(Value, Line) token_l (d, Value, LitDouble, Line)
 #define token_f(Value, Line) token_l (d, Value, LitFloat, Line)
 #define token_t(Value, Line) token_l (t, Value, LitText, Line)
-#define token_n(Value, Line) token_l (t, Value, LitName, Line)
+#define token_n(Value, Line)                                              \
+	(Token)                                                               \
+	{                                                                     \
+		.type = TName, .line = Line,                                      \
+		.lit                                                              \
+			= {.value = {.t = Value},                                     \
+			   .type  = LitName }                                          \
+	}
 #define token_c(Value, Line) token_l (i, Value, LitChar, Line)
 
 #endif // !olmo_token_h
