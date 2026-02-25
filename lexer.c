@@ -91,10 +91,24 @@ number (Lexer* lexer)
 		}
 }
 
+/// string that this function produces
+/// for now is just pointer to lexer buffer
 static Token
 text (Lexer* lexer)
 {
-	unimplemented ("string lexing");
+	next (); // skip "
+
+	// just save to buffer
+	for (; *cur != '"' && *cur != '\0'; save (lexer));
+
+	if (*cur == '\0')
+		{
+			error ("unfinished string");
+		}
+
+	next (); // skip "
+
+	return token_t (lexer->buffer, lexer->line);
 }
 
 static Token
@@ -163,6 +177,7 @@ LexerTokenize (Lexer* lexer)
 				default:
 					if (isspace (*cur))
 						{
+							next ();
 							continue;
 						}
 					else if (isln (cur))
