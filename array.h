@@ -1,5 +1,5 @@
-#ifndef olmo_array_h
-#define olmo_array_h
+#ifndef olmo_Array_h
+#define olmo_Array_h
 
 #include <stddef.h>
 
@@ -12,43 +12,43 @@ typedef struct
 	size_t itemsize;
 } ArrayHeader;
 
-#define error(fmt, ...)                                                   \
-	printf ("error: " fmt "\n", ##__VA_ARGS__);                           \
-	exit (1)
-
-#define cast(v, T) (T) (v)
-
 #define CAP_INITIAL 8
 
-#define array(T) (T*) array_init (sizeof (T), CAP_INITIAL)
-#define arrayc(T, cap) (T*) array_init (sizeof (T), cap)
-#define array_header(arr) ((ArrayHeader*) (arr) - 1)
-#define cap(arr) array_header (arr)->cap
-#define len(arr) array_header (arr)->len
-#define array_itemsize(arr) array_header (arr)->itemsize
-#define array_empty(arr) (len (arr) == 0)
-#define array_reserve(arr, items) arr = array_resize (arr, items)
-#define array_jpush(arr, val) arr[len (arr)++] = val
-#define array_inc(arr) len (arr)++
-#define array_push(arr, val)                                              \
-	array_reserve (arr, 1);                                               \
-	array_jpush (arr, val)
+#define Array(T) (T*) ArrayInit (sizeof (T), CAP_INITIAL)
+#define Arrayc(T, cap) (T*) ArrayInit (sizeof (T), cap)
+#define ArrayH(arr) ((ArrayHeader*) (arr) - 1)
+#define Cap(arr) ArrayH (arr)->cap
+#define Len(arr) ArrayH (arr)->len
+#define ArrayItemsize(arr) ArrayH (arr)->itemsize
+#define ArrayEmpty(arr) (Len (arr) == 0)
+#define ArrayReserve(arr, items) arr = ArrayResize (arr, items)
+#define ArrayJpush(arr, val) arr[Len (arr)++] = val
+#define ArrayInc(arr) Len (arr)++
+#define ArrayPush(arr, val)                                               \
+	ArrayReserve (arr, 1);                                                \
+	ArrayJpush (arr, val)
 
-#define array_pop(arr, T) (T) arr[len (arr)--]
-#define foreach(arr, name) for (int name = 0; name < len (arr); ++name)
+#define ArrayPop(arr, T) (T) arr[Len (arr)--]
+#define foreach(arr, name) for (int name = 0; name < Len (arr); ++name)
 
-/// Init array
+#define String() Array (char)
+#define StringClear(arr)                                                  \
+	arr[0]	  = '\0';                                                     \
+	Len (arr) = 0;
+
+/// Init Array
 void*
-array_init (size_t itemsize, size_t capacity);
+ArrayInit (size_t itemsize, size_t capacity);
 
-/// Resize array if needed so it can fit another n elements
+/// Resize Array if needed so it can fit another n elements
 void*
-array_resize (void* array, size_t n);
+ArrayResize (void* array, size_t n);
 
 void
-array_free (void* array);
+ArrayFree (void* array);
 
+/// for each element in array call PrintFunction
 void
-array_print (void* array, PrintFunction fn);
+ArrayPrint (void* array, PrintFunction fn);
 
-#endif // !olmo_array_h
+#endif // !olmo_Array_h

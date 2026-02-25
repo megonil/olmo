@@ -15,10 +15,4 @@ SourceMgrInit (SourceMgr* mgr, const char* filename);
 void
 SourceMgrNewFile (SourceMgr* mgr, const char* filename);
 
-typedef struct
-{
-	char* start;
-	char* end;
-} SmPos;
-
 #endif // !olmo_sourcemgr_h

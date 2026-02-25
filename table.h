@@ -6,6 +6,7 @@
 // hashmap
 
 #include "token.h"
+#include "utils.h"
 
 #include <stdint.h>
 
@@ -37,7 +38,6 @@ typedef uint32_t hash_t;
 		Name##TableItem* entries;                                         \
 		uint32_t		 cap;                                             \
 		uint32_t		 size;                                            \
-		int				 inited;                                          \
 	} Name##Table
 
 #define define_tablemethods(Name, K, V)                                   \
@@ -63,6 +63,19 @@ define_tablestr (String, const char*, const char*);
 define_tablestr (Keyword, const char*, TokenType);
 
 define_table (Num, int, int);
-#define table(T, name) T name = (T) {.inited = 0};
+
+#define TableInitList(Name, table, ...)                                    \
+	do                                                                     \
+		{                                                                  \
+			Name##TableInit (table);                                       \
+			Name##TableItem _items[] = {__VA_ARGS__};                      \
+			uint32_t		_count = sizeof (_items) / sizeof (_items[0]); \
+			for (uint32_t _i = 0; _i < _count; _i++)                       \
+				{                                                          \
+					Name##TableInsert (table, _items[_i].key,              \
+									   _items[_i].value);                  \
+				}                                                          \
+		}                                                                  \
+	while (0)
 
 #endif // !olmo_table_h

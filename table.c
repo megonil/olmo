@@ -194,14 +194,10 @@ intcmp (int a, int b)
                                                                           \
 	void Name##TableInit (Name##Table* table)                             \
 	{                                                                     \
-		if (!table->inited)                                               \
-			{                                                             \
-				table->cap	= TABLE_INITIAL_CAP;                          \
-				table->size = 0;                                          \
-				table->entries                                            \
-					= calloc (1, table->cap * sizeof (Name##TableItem));  \
-				table->inited = 1;                                        \
-			}                                                             \
+		table->cap	= TABLE_INITIAL_CAP;                                  \
+		table->size = 0;                                                  \
+		table->entries                                                    \
+			= calloc (1, table->cap * sizeof (Name##TableItem));          \
 	}                                                                     \
 	void Name##TableFree (Name##Table* table)                             \
 	{                                                                     \

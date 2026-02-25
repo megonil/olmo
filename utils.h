@@ -3,6 +3,7 @@
 
 #include "flag.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -13,6 +14,10 @@
 
 #define ok() exit (0)
 #define fail() exit (1)
+
+#define True 1
+#define False 0
+#define bool int
 
 #define println_exit(fmt, ...)                                            \
 	println (fmt, ##__VA_ARGS__);                                         \
@@ -25,6 +30,8 @@
 #define error(fmt, ...) eprintln_exit ("error: " fmt, ##__VA_ARGS__)
 #define warn(fmt, ...) eprintln ("warn: " fmt, ##__VA_ARGS__)
 #define note(fmt, ...) println ("note: " fmt, ##__VA_ARGS__)
+#define unimplemented(fmt, ...)                                           \
+	eprintln_exit ("sorry, but " fmt " is unimplemented!", ##__VA_ARGS__)
 
 #define debug(...)                                                        \
 	if (getflag (FlagDebug))                                              \
@@ -37,6 +44,11 @@
 		{                                                                 \
 			println (fmt, ##__VA_ARGS__);                                 \
 		}
+
+#define fractpart(val) (val - floor (val))
+
+double
+parse_double (char* start, char** end);
 
 // check for unix-style os
 #if !defined(_WIN32)                                                      \

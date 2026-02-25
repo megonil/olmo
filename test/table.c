@@ -1,15 +1,7 @@
 #include "../table.h"
 
+#include "array.h"
 #include "unity.h"
-
-void
-setUp (void)
-{
-}
-void
-tearDown (void)
-{
-}
 
 void
 test_table (void)
@@ -69,14 +61,4 @@ test_num_table (void)
 	TEST_ASSERT_FALSE (NumTableContains (&table, 42));
 
 	NumTableFree (&table);
-}
-
-int
-main (void)
-{
-	UNITY_BEGIN ();
-	RUN_TEST (test_table);
-	RUN_TEST (test_string_table);
-	RUN_TEST (test_num_table);
-	return UNITY_END ();
 }

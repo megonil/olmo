@@ -1,5 +1,7 @@
 #include "array.h"
 
+#include "utils.h"
+
 #include <assert.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -7,7 +9,7 @@
 #include <string.h>
 
 void*
-array_init (size_t itemsize, size_t capacity)
+ArrayInit (size_t itemsize, size_t capacity)
 {
 	size_t size = itemsize * capacity;
 	size += sizeof (ArrayHeader);
@@ -27,15 +29,15 @@ array_init (size_t itemsize, size_t capacity)
 }
 
 void*
-array_resize (void* array, size_t n)
+ArrayResize (void* array, size_t n)
 {
-	if (len (array) + n > cap (array))
+	if (Len (array) + n > Cap (array))
 		{
 			void* newarray
-				= array_init (array_itemsize (array), cap (array) * 2);
+				= ArrayInit (ArrayItemsize (array), Cap (array) * 2);
 
-			memcpy (newarray, array, len (array));
-			array_free (array);
+			memcpy (newarray, array, Len (array));
+			ArrayFree (array);
 			return newarray;
 		}
 	else
@@ -45,19 +47,18 @@ array_resize (void* array, size_t n)
 }
 
 void
-array_print (void* array, PrintFunction fn)
+ArrayPrint (void* array, PrintFunction fn)
 {
 	foreach (array, i)
 		{
-			fn (array + i * array_itemsize (array));
+			fn (array + i * ArrayItemsize (array));
 		}
 }
 
 inline void
-array_free (void* array)
+ArrayFree (void* array)
 {
 	assert (array != NULL);
 
-	free (array_header (array));
-	array = NULL;
+	free (ArrayH (array));
 }

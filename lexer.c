@@ -1,5 +1,6 @@
 #include "lexer.h"
 
+#include "array.h"
 #include "sourcemgr.h"
 #include "table.h"
 #include "token.h"
@@ -7,23 +8,58 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <float.h>
+#include <limits.h>
 
 #define cur lexer->c
 #define next() cur++
+
+static void
+save (Lexer* lexer)
+{
+	ArrayPush (lexer->buffer, *lexer->c);
+	next ();
+}
+
 #define peek(i) *(cur + i)
 
-static table (KeywordTable, keywords);
+static KeywordTable keywords;
+static bool			keywords_inited = False;
+
+static void
+init_keywords ()
+{
+	if (!keywords_inited)
+		{
+#define X(Type, Str) {Str, Type},
+			TableInitList (Keyword, &keywords, KEYWORDS);
+#undef X
+		}
+}
 
 void
 LexerInit (Lexer* lexer, const char* filename)
 {
 	SourceMgrInit (&lexer->mgr, filename);
 	KeywordTableInit (&keywords);
-	lexer->c	= lexer->mgr.source;
-	lexer->line = 1;
+	init_keywords ();
+
+	lexer->c	  = lexer->mgr.source;
+	lexer->line	  = 1;
+	lexer->buffer = String ();
 }
 
-static int
+void
+LexerFromSource (Lexer* lexer, char* source)
+{
+	lexer->c	  = source;
+	lexer->line	  = 1;
+	lexer->buffer = String ();
+
+	init_keywords ();
+}
+
+static bool
 isln (char* c)
 {
 #ifdef OLMO_UNIX
@@ -33,84 +69,66 @@ isln (char* c)
 #endif
 }
 
-#define token(Type, Start, End)                                           \
-	(Token)                                                               \
-	{                                                                     \
-		.pos = {.start = Start, .end = End}, .type = Type                 \
-	}
+#define flowerror()                                                       \
+	note ("value overflow/underflow at line %zu", lexer->line);
 
 static Token
 number (Lexer* lexer)
 {
-	char* start	  = cur;
-	int	  has_dot = 0;
+	char* start = cur;
 
-	while (isdigit (*cur) || *cur == '.')
+	double number = parse_double (start, &cur);
+
+	switch (*cur)
 		{
-			if (*cur == '.')
+		case 'd': return token_d (number, lexer->line);
+		case 'f':
+			if (number > FLT_MAX || number < FLT_MIN)
 				{
-					if (has_dot)
-						{
-							error ("two or more dots in number");
-						}
-					has_dot = 1;
+					flowerror ();
 				}
-			next ();
-		}
+			return token_f ((float) number, lexer->line);
+		case 'u':
+			if (number > UINT32_MAX)
+				{
+					flowerror ();
+				}
+		default:
+			if (fractpart (number) != 0)
+				{
+					return token_d (number, lexer->line);
+				}
+			if (number > INT32_MAX || number < INT32_MIN)
+				{
+					flowerror ();
+				}
 
-	Token result;
-	char  temp = *cur;
-	if (has_dot)
-		{
-			result = token (TNumber, start, cur);
+			return token_i ((int32_t) number, lexer->line);
 		}
-	else
-		{
-			result = token (TInteger, start, cur);
-		}
-
-	*cur = temp;
-	return result;
 }
 
 static Token
-string (Lexer* lexer)
+text (Lexer* lexer)
 {
+	unimplemented ("string lexing");
 }
 
 static Token
 ichar (Lexer* lexer)
 {
+	unimplemented ("char lexing");
 }
 
 static Token
 ident (Lexer* lexer)
 {
-	char* start = cur;
-	for (next (); isalpha (*cur); next ());
-
-	char tmp = *cur;
-	*cur	 = '\0';
-
-	TokenType* type = KeywordTableGet (&keywords, start);
-	Token	   result;
-	if (type == 0)
-		{
-			result = token (*type, start, cur);
-		}
-	else
-		{
-			result = token (TName, start, cur);
-		}
-
-	*cur = tmp;
-	return result;
+	unimplemented ("keywords lexing");
 }
 
 static void
 skip_comment (Lexer* lexer)
 {
-	while (!isln (lexer))
+	while (!isln (cur))
 		{
 			next ();
 		}
@@ -121,21 +139,22 @@ skip_comment (Lexer* lexer)
 		next ();                                                          \
 		if (*cur == dc)                                                   \
 			{                                                             \
-				done (dt, cur - 1, cur);                                  \
+				done (dt);                                                \
 			}                                                             \
 		else                                                              \
 			{                                                             \
-				done (t, cur, cur);                                       \
+				done (t);                                                 \
 			}                                                             \
 		break;
 
-#define done(t, start, end)                                               \
-	result = token (t, start, end);                                       \
+#define done(t)                                                           \
+	result = token (t);                                                   \
 	goto known;
 
 Token
 LexerTokenize (Lexer* lexer)
 {
+	StringClear (lexer->buffer);
 	Token result;
 	for (;;)
 		{
@@ -143,7 +162,9 @@ LexerTokenize (Lexer* lexer)
 				{
 					doubletok ('-', '-', '>', TArrow);
 
-				case '"': return string (lexer);
+				case '#': skip_comment (lexer); continue;
+				case '\0': done (TEOF);
+				case '"': return text (lexer);
 				case '\'': return ichar (lexer);
 
 				default:
@@ -156,6 +177,7 @@ LexerTokenize (Lexer* lexer)
 							lexer->line++;
 							continue;
 						}
+
 					if (isdigit (*cur))
 						{
 							return number (lexer);
@@ -190,3 +212,11 @@ LexerDislex (Lexer* lexer, Token* token)
 			printf ("%s ", Tt2Str (token->type));
 		}
 }
+
+void
+LexerDestroy (Lexer* lexer)
+{
+	ArrayFree (lexer->buffer);
+}
+
+#undef literal

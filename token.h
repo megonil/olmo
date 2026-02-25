@@ -1,24 +1,23 @@
 #ifndef olmo_token_h
 #define olmo_token_h
 
-#include "sourcemgr.h"
-
 #include <stdint.h>
 
-#define TOKENS                                                            \
+#define KEYWORDS                                                          \
 	X (TFun, "fun")                                                       \
 	X (TRet, "ret")                                                       \
 	X (TIf, "if")                                                         \
 	X (TElse, "else")                                                     \
 	X (TWhile, "while")                                                   \
 	X (TDo, "do")                                                         \
-	X (TFor, "for")                                                       \
+	X (TFor, "for")
+
+#define TOKENS                                                            \
+	KEYWORDS                                                              \
 	X (TArrow, "->")                                                      \
 	X (TType, "<type>")                                                   \
-	X (TName, "<name>")                                                   \
-	X (TInteger, "<integer>")                                             \
-	X (TNumber, "<number>")                                               \
-	X (TString, "<string>")
+	X (TLiteral, "<literal>")                                             \
+	X (TEOF, "EOF")
 
 #define tokstart (UINT8_MAX + 1)
 
@@ -39,10 +38,54 @@ static const char* ttype_names[] = {
 
 #define Tt2Str(tt) ttype_names[tt - tokstart]
 
+typedef enum
+{
+	LitBool,
+	LitUint,
+	LitInt,
+	LitFloat,
+	LitDouble,
+	LitText,
+} LiteralType;
+
+typedef union
+{
+	double		d;
+	uint64_t	i;
+	const char* t;
+} LiteralValue;
+
 typedef struct
 {
-	SmPos	  pos;
+	LiteralType	 type;
+	LiteralValue value;
+} Literal;
+
+typedef struct
+{
+	Literal	  lit; // optional
 	TokenType type;
+	int		  line;
 } Token;
+
+#define token(Type)                                                       \
+	(Token)                                                               \
+	{                                                                     \
+		.type = Type                                                      \
+	}
+#define token_l(Field, Value, Type, Line)                                 \
+	(Token)                                                               \
+	{                                                                     \
+		.lit  = {.value = {.Field = Value}, .type = Type},                \
+		.type = TLiteral, .line = Line                                    \
+	}
+
+#define token_i(Value, Line) token_l (i, Value, LitInt, Line)
+#define token_u(Value, Line) token_l (i, Value, LitUint, Line)
+#define token_b(Value, Line) token_l (i, Value, LitBool, Line)
+#define token_d(Value, Line) token_l (d, Value, LitDouble, Line)
+#define token_f(Value, Line) token_l (d, Value, LitFloat, Line)
+#define token_t(Value, Line) token_l (t, Value, LitText, Line)
+#define token_n(Value, Line) token_l (t, Value, LitName)
 
 #endif // !olmo_token_h
