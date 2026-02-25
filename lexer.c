@@ -100,7 +100,22 @@ text (Lexer* lexer)
 static Token
 ichar (Lexer* lexer)
 {
-	unimplemented ("char lexing");
+	next (); // skip '
+
+	char val = *cur;
+	next ();
+
+	if (*cur != '\'')
+		{
+			error ("too many characters in char literal");
+		}
+	else if (*cur == '\0')
+		{
+			error ("unfinished char literal");
+		}
+
+	next ();
+	return token_c (val, lexer->line);
 }
 
 static Token
@@ -123,23 +138,17 @@ skip_comment (Lexer* lexer)
 		next ();                                                          \
 		if (*cur == dc)                                                   \
 			{                                                             \
-				done (dt);                                                \
+				return token (dt);                                        \
 			}                                                             \
 		else                                                              \
 			{                                                             \
-				done (t);                                                 \
-			}                                                             \
-		break;
-
-#define done(t)                                                           \
-	result = token (t);                                                   \
-	goto known;
+				return token (t);                                         \
+			}
 
 Token
 LexerTokenize (Lexer* lexer)
 {
 	StringClear (lexer->buffer);
-	Token result;
 	for (;;)
 		{
 			switch (*cur)
@@ -147,7 +156,7 @@ LexerTokenize (Lexer* lexer)
 					doubletok ('-', '-', '>', TArrow);
 
 				case '#': skip_comment (lexer); continue;
-				case '\0': done (TEOF);
+				case '\0': return token (TEOF);
 				case '"': return text (lexer);
 				case '\'': return ichar (lexer);
 
@@ -172,8 +181,6 @@ LexerTokenize (Lexer* lexer)
 						}
 				}
 		}
-known:
-	return result;
 }
 
 static int lastline = 1;

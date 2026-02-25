@@ -41,6 +41,7 @@ static const char* ttype_names[] = {
 typedef enum
 {
 	LitBool,
+	LitChar,
 	LitUint,
 	LitInt,
 	LitFloat,
@@ -86,6 +87,7 @@ typedef struct
 #define token_d(Value, Line) token_l (d, Value, LitDouble, Line)
 #define token_f(Value, Line) token_l (d, Value, LitFloat, Line)
 #define token_t(Value, Line) token_l (t, Value, LitText, Line)
-#define token_n(Value, Line) token_l (t, Value, LitName)
+#define token_n(Value, Line) token_l (t, Value, LitName, Line)
+#define token_c(Value, Line) token_l (i, Value, LitChar, Line)
 
 #endif // !olmo_token_h

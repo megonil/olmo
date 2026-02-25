@@ -8,7 +8,6 @@
 #include <stdlib.h>
 
 #define fprintfln(file, fmt, ...) fprintf (file, fmt "\n", ##__VA_ARGS__)
-
 #define println(fmt, ...) fprintfln (stdout, fmt, ##__VA_ARGS__)
 #define eprintln(fmt, ...) fprintfln (stderr, fmt, ##__VA_ARGS__)
 
@@ -30,6 +29,7 @@
 #define error(fmt, ...) eprintln_exit ("error: " fmt, ##__VA_ARGS__)
 #define warn(fmt, ...) eprintln ("warn: " fmt, ##__VA_ARGS__)
 #define note(fmt, ...) println ("note: " fmt, ##__VA_ARGS__)
+
 #define unimplemented(fmt, ...)                                           \
 	eprintln_exit ("sorry, but " fmt " is unimplemented!", ##__VA_ARGS__)
 

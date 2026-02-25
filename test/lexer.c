@@ -3,11 +3,14 @@
 #include "../token.h"
 #include "unity.h"
 
+#define starttest(source) LexerFromSource (&lexer, source)
+#define endtest() LexerDestroy (&lexer)
+
 void
 test_lexer ()
 {
 	Lexer lexer;
-	LexerFromSource (&lexer, "1");
+	starttest ("1");
 
 	Token token = LexerTokenize (&lexer);
 
@@ -17,21 +20,26 @@ test_lexer ()
 	Token eof = LexerTokenize (&lexer);
 	TEST_ASSERT_EQUAL_INT (TEOF, eof.type);
 
-	LexerDestroy (&lexer);
+	endtest ();
+	starttest ("123.24");
 
-	LexerFromSource (&lexer, "123.24");
 	token = LexerTokenize (&lexer);
 
 	TEST_ASSERT_EQUAL_FLOAT (123.24, token.lit.value.d);
 	TEST_ASSERT_EQUAL_INT (TLiteral, token.type);
 
-	LexerDestroy (&lexer);
-	LexerFromSource (&lexer, "1e-10");
+	endtest ();
+	starttest ("1e-10");
 
 	token = LexerTokenize (&lexer);
 
 	TEST_ASSERT_EQUAL_FLOAT (1e-10, token.lit.value.d);
 	TEST_ASSERT_EQUAL_INT (TLiteral, token.type);
 
-	LexerDestroy (&lexer);
+	endtest ();
+	starttest ("'a'");
+	token = LexerTokenize (&lexer);
+
+	TEST_ASSERT_EQUAL_INT ('a', token.lit.value.i);
+	TEST_ASSERT_EQUAL_INT (LitChar, token.lit.type);
 }
