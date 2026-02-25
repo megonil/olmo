@@ -23,26 +23,12 @@ save (Lexer* lexer)
 
 #define peek(i) *(cur + i)
 
-static KeywordTable keywords;
-static bool			keywords_inited = False;
-
-static void
-init_keywords ()
-{
-	if (!keywords_inited)
-		{
-#define X(Type, Str) {Str, Type},
-			TableInitList (Keyword, &keywords, KEYWORDS);
-#undef X
-		}
-}
+extern KeywordTable keywords;
 
 void
 LexerInit (Lexer* lexer, const char* filename)
 {
 	SourceMgrInit (&lexer->mgr, filename);
-	KeywordTableInit (&keywords);
-	init_keywords ();
 
 	lexer->c	  = lexer->mgr.source;
 	lexer->line	  = 1;
@@ -55,8 +41,6 @@ LexerFromSource (Lexer* lexer, char* source)
 	lexer->c	  = source;
 	lexer->line	  = 1;
 	lexer->buffer = String ();
-
-	init_keywords ();
 }
 
 static bool

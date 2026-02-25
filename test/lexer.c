@@ -32,4 +32,6 @@ test_lexer ()
 
 	TEST_ASSERT_EQUAL_FLOAT (1e-10, token.lit.value.d);
 	TEST_ASSERT_EQUAL_INT (TLiteral, token.type);
+
+	LexerDestroy (&lexer);
 }
