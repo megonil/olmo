@@ -5,6 +5,8 @@
 // linear probing
 // hashmap
 
+#include "token.h"
+
 #include <stdint.h>
 
 typedef uint32_t hash_t;
@@ -35,6 +37,7 @@ typedef uint32_t hash_t;
 		Name##TableItem* entries;                                         \
 		uint32_t		 cap;                                             \
 		uint32_t		 size;                                            \
+		int				 inited;                                          \
 	} Name##Table
 
 #define define_tablemethods(Name, K, V)                                   \
@@ -57,7 +60,9 @@ typedef uint32_t hash_t;
 
 define_tablestr (default_name, const char*, int);
 define_tablestr (String, const char*, const char*);
+define_tablestr (Keyword, const char*, TokenType);
 
 define_table (Num, int, int);
+#define table(T, name) T name = (T) {.inited = 0};
 
 #endif // !olmo_table_h

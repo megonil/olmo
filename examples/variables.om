@@ -1,0 +1,17 @@
+# this is a comment
+
+\#
+this is multiline comment
+#/
+
+a: Int = 10
+# default-initialized
+# so b == 0
+b: Int
+
+b = a
+
+# variable b is now type of double
+# new b "shadows" older b
+b: Double
+

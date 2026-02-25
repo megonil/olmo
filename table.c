@@ -1,5 +1,7 @@
 #include "table.h"
 
+#include "token.h"
+
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -192,10 +194,14 @@ intcmp (int a, int b)
                                                                           \
 	void Name##TableInit (Name##Table* table)                             \
 	{                                                                     \
-		table->cap	= TABLE_INITIAL_CAP;                                  \
-		table->size = 0;                                                  \
-		table->entries                                                    \
-			= calloc (1, table->cap * sizeof (Name##TableItem));          \
+		if (!table->inited)                                               \
+			{                                                             \
+				table->cap	= TABLE_INITIAL_CAP;                          \
+				table->size = 0;                                          \
+				table->entries                                            \
+					= calloc (1, table->cap * sizeof (Name##TableItem));  \
+				table->inited = 1;                                        \
+			}                                                             \
 	}                                                                     \
 	void Name##TableFree (Name##Table* table)                             \
 	{                                                                     \
@@ -246,5 +252,6 @@ intcmp (int a, int b)
 
 implementstr (, const char*, int, olmo_strcmp, murmur);
 implementstr (String, const char*, const char*, olmo_strcmp, murmur);
+implementstr (Keyword, const char*, TokenType, olmo_strcmp, murmur);
 
 implement (Num, int, int, intcmp, hash32)

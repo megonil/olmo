@@ -1,0 +1,9 @@
+a: Int = 100
+
+if a > 50{
+	a *= 2
+} else if a < 50 {
+	a /= 2
+} else {
+	print("`a` variable is equal to 50")
+}

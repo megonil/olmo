@@ -1,0 +1,6 @@
+a: Text = "readonly string"
+# shadowing
+a: String = "just string, use it how you want"
+# shadowing
+a: Bool = True
+

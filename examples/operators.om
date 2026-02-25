@@ -1,0 +1,20 @@
+a: Int = 1 + 10
+a = 10 - 1
+
+# a *= <something> is syntax sugar for a = a * <something>
+a *= 2
+
+# same as *=, but divides instead
+a /= 1
+
+a = 10 % 3 # modulo operation, a is now equals to 1
+
+a = 5 & 3 # bitwise and operation
+a = 5 | 3 # bitwise or operation
+a = 5 ^ 3 # bitwise xor operation
+
+a = 10 << 2 # bitwise left shift
+a = 10 >> 2 # bitwise right shift
+
+a = 5 ** 2 # power
+

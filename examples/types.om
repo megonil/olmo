@@ -1,0 +1,25 @@
+# integer variable, 4 bytes
+a: Int
+
+# unsigned integer variable, 4 bytes
+b: Uint
+
+# for integer values there are also Int8 Int16 .. Int64 and same for the Uint
+
+# float variable, 4 bytes
+c: Float
+
+# double variable, 8 bytes
+d: Double
+
+# string variable
+# we'll talk about it later
+e: String
+
+# Text is a readonly character array(aka const char* in C)
+f: Text
+
+# character variable
+# behaves like in C
+g: Char
+

@@ -1,0 +1,7 @@
+fun Add(a: Int, b: Int) -> Int {
+	ret a + b
+}
+
+fun Sqrt(value: Double, base: Double) -> Double {
+	ret value ** 1/base
+}
