@@ -260,6 +260,28 @@ symbol_2char (Lexer* lexer)
 	return token (peek (-1));
 }
 
+static void
+skip_multilinecomment (Lexer* lexer)
+{
+	// skip start of the multiline comment
+	next ();
+	next ();
+
+	while (*cur != '#' && peek (1) != '/' && *cur != '\0')
+		{
+			next ();
+		}
+
+	if (*cur == '\0')
+		{
+			error ("unfinished multiline comment");
+		}
+
+	// skip end of the multiline comment
+	next ();
+	next ();
+}
+
 Token
 LexerTokenize (Lexer* lexer)
 {
@@ -273,6 +295,12 @@ LexerTokenize (Lexer* lexer)
 				case '\0': return token (TEOF);
 				case '"': return text (lexer);
 				case '\'': return ichar (lexer);
+				case '\\':
+					if (peek (1) == '#')
+						{
+							skip_multilinecomment (lexer);
+							continue;
+						}
 
 				default:
 					if (isspace (*cur))

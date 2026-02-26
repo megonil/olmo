@@ -26,6 +26,7 @@ main (void)
 	RUN_TEST (test_lexer_ident);
 	RUN_TEST (test_lexer_string);
 	RUN_TEST (test_lexer_char);
+	RUN_TEST (test_lexer_comments);
 
 	return UNITY_END ();
 }

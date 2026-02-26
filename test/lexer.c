@@ -17,8 +17,11 @@ void
 test_lexer_comments ()
 {
 	testh ();
-	starttest ("# this is a comment");
+	starttest ("# this is a comment\n \\# this is multiline comment\n "
+			   "something another #/ +");
 
+	TEST_ASSERT_EQUAL_INT ('+', token.type);
+	update ();
 	TEST_ASSERT_EQUAL_INT (TEOF, token.type);
 	endtest ();
 }
