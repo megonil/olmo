@@ -9,11 +9,89 @@
 	update ();
 #define endtest() LexerDestroy (&lexer)
 
-void
-test_lexer ()
-{
-	Lexer lexer;
+#define testh()                                                           \
+	Lexer lexer;                                                          \
 	Token token;
+
+void
+test_lexer_comments ()
+{
+	testh ();
+	starttest ("# this is a comment");
+
+	TEST_ASSERT_EQUAL_INT (TEOF, token.type);
+	endtest ();
+}
+void
+test_lexer_string ()
+{
+	testh ();
+	starttest ("\"abc\n\x033\n\"");
+
+	TEST_ASSERT_EQUAL_STRING ("abc\n\x033\n", token.lit.value.t);
+	TEST_ASSERT_EQUAL_INT (LitText, token.lit.type);
+	update ();
+
+	TEST_ASSERT_EQUAL_INT (TEOF, token.type);
+	endtest ();
+}
+
+void
+test_lexer_char ()
+{
+	testh ();
+	starttest ("'a'");
+
+	TEST_ASSERT_EQUAL_INT ('a', token.lit.value.i);
+	TEST_ASSERT_EQUAL_INT (LitChar, token.lit.type);
+	update ();
+
+	TEST_ASSERT_EQUAL_INT (TEOF, token.type);
+	endtest ();
+
+	starttest ("'\n' '\x033'");
+	TEST_ASSERT_EQUAL_INT ('\n', token.lit.value.i);
+
+	update ();
+	TEST_ASSERT_EQUAL_INT ('\x033', token.lit.value.i);
+	update ();
+	TEST_ASSERT_EQUAL_INT (TEOF, token.type);
+	endtest ();
+}
+
+void
+test_lexer_ident ()
+{
+	testh ();
+	starttest ("for");
+
+	TEST_ASSERT_EQUAL_INT (TFor, token.type);
+	endtest ();
+
+	starttest ("abcdef");
+	TEST_ASSERT_EQUAL_INT (TName, token.type);
+	TEST_ASSERT_EQUAL_STRING ("abcdef", token.lit.value.t);
+	endtest ();
+}
+
+void
+test_lexer_generic ()
+{
+	testh ();
+
+	starttest ("+ ) - *");
+
+	TEST_ASSERT_EQUAL_INT ('+', token.type);
+	update ();
+	TEST_ASSERT_EQUAL_INT (')', token.type);
+
+	update ();
+	TEST_ASSERT_EQUAL_INT ('-', token.type);
+
+	update ();
+	TEST_ASSERT_EQUAL_INT ('*', token.type);
+
+	endtest ();
 	starttest ("1");
 
 	TEST_ASSERT_EQUAL_INT (1, token.lit.value.i);
@@ -35,40 +113,14 @@ test_lexer ()
 	TEST_ASSERT_EQUAL_INT (TLiteral, token.type);
 
 	endtest ();
-	starttest ("'a'");
+	starttest ("-> >= >>")
 
-	TEST_ASSERT_EQUAL_INT ('a', token.lit.value.i);
-	TEST_ASSERT_EQUAL_INT (LitChar, token.lit.type);
-
-	endtest ();
-	starttest ("\"abc\"");
-
-	TEST_ASSERT_EQUAL_STRING ("abc", token.lit.value.t);
-	TEST_ASSERT_EQUAL_INT (LitText, token.lit.type);
-
-	endtest ();
-	starttest ("\"abc\" '1' 1");
-
-	TEST_ASSERT_EQUAL_STRING ("abc", token.lit.value.t);
-	TEST_ASSERT_EQUAL_INT (LitText, token.lit.type);
+		TEST_ASSERT_EQUAL_INT (TArrow, token.type);
+	update ();
+	TEST_ASSERT_EQUAL_INT (TGe, token.type);
 
 	update ();
-
-	TEST_ASSERT_EQUAL_INT ('1', token.lit.value.i);
-
-	update ();
-
-	TEST_ASSERT_EQUAL_INT (1, token.lit.value.i);
-	endtest ();
-	starttest ("for");
-
-	TEST_ASSERT_EQUAL_INT (TFor, token.type);
-	endtest ();
-
-	starttest ("abcdef");
-
-	TEST_ASSERT_EQUAL_INT (TName, token.type);
-	TEST_ASSERT_EQUAL_STRING ("abcdef", token.lit.value.t);
+	TEST_ASSERT_EQUAL_INT (TRightShift, token.type);
 
 	endtest ();
 }

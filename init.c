@@ -1,6 +1,7 @@
 // these functions needed to free and init some things
 
 #include "table.h"
+#include "token.h"
 
 #include <unistd.h>
 

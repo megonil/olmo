@@ -42,6 +42,65 @@ LexerFromSource (Lexer* lexer, char* source)
 	lexer->line	  = 1;
 	lexer->buffer = String ();
 }
+static void
+readhex (Lexer* lexer)
+{
+	next ();
+	int value = 0;
+
+	for (int i = 0; i < 2; ++i)
+		{
+			int digit = 0;
+			if (isdigit (*cur))
+				{
+					digit = *cur - '0';
+				}
+			else if (*cur >= 'a' && *cur <= 'f')
+				{
+					digit = *cur - 'a' + 10;
+				}
+			else if (*cur >= 'A' && *cur <= 'F')
+				{
+					digit = *cur - 'A' + 10;
+				}
+
+			value = (value << 4) | digit;
+			ArrayPush (lexer->buffer, (char) value);
+			return;
+		}
+}
+
+static void
+save_escape (Lexer* lexer)
+{
+	char c;
+	if (*cur == '\\')
+		{
+			next ();
+			switch (*cur)
+				{
+				case 'n': c = '\n'; break;
+				case 'r': c = '\r'; break;
+				case 'b': c = '\b'; break;
+				case 'a': c = '\a'; break;
+				case 't': c = '\t'; break;
+				case 'v': c = '\v'; break;
+				case 'f': c = '\f'; break;
+				case '0': c = '\0'; break;
+				case '\'': c = '\''; break;
+				case '"': c = '"'; break;
+				case 'x': readhex (lexer); return;
+				case 'u': unimplemented ("wait");
+				}
+		}
+	else
+		{
+			c = *cur;
+		}
+
+	next ();
+	ArrayPush (lexer->buffer, c);
+}
 
 static bool
 isln (char* c)
@@ -99,7 +158,7 @@ text (Lexer* lexer)
 	next (); // skip "
 
 	// just save to buffer
-	for (; *cur != '"' && *cur != '\0'; save (lexer));
+	for (; *cur != '"' && *cur != '\0'; save_escape (lexer));
 
 	if (*cur == '\0')
 		{
@@ -116,8 +175,7 @@ ichar (Lexer* lexer)
 {
 	next (); // skip '
 
-	char val = *cur;
-	next ();
+	save_escape (lexer);
 
 	if (*cur != '\'')
 		{
@@ -129,7 +187,7 @@ ichar (Lexer* lexer)
 		}
 
 	next ();
-	return token_c (val, lexer->line);
+	return token_c (lexer->buffer[0], lexer->line);
 }
 
 /// same warning as for the text() function
@@ -162,16 +220,45 @@ skip_comment (Lexer* lexer)
 }
 
 #define doubletok(c, t, dc, dt)                                           \
-	case c:                                                               \
-		next ();                                                          \
-		if (*cur == dc)                                                   \
-			{                                                             \
-				return token (dt);                                        \
-			}                                                             \
-		else                                                              \
-			{                                                             \
-				return token (t);                                         \
-			}
+	if (*cur == c)                                                        \
+		{                                                                 \
+			next ();                                                      \
+			if (*cur == dc)                                               \
+				{                                                         \
+					next ();                                              \
+					return token (dt);                                    \
+				}                                                         \
+			return token (t);                                             \
+		}
+
+#define ddoubletok(T1, Str1, T2, Str2)                                    \
+	if (*cur == Str1[0])                                                  \
+		{                                                                 \
+			next ();                                                      \
+			if (*cur == Str1[1])                                          \
+				{                                                         \
+					next ();                                              \
+					return token (T1);                                    \
+				}                                                         \
+			if (*cur == Str2[1])                                          \
+				{                                                         \
+					next ();                                              \
+					return token (T2);                                    \
+				}                                                         \
+			return token (Str1[0]);                                       \
+		}
+
+static Token
+symbol_2char (Lexer* lexer)
+{
+#define X(Type, Str) doubletok (Str[0], Str[0], Str[1], Type)
+	SYMBOLS_2CHAR
+#undef X
+	SYMBOLS_2CHARD (ddoubletok);
+
+	next ();
+	return token (peek (-1));
+}
 
 Token
 LexerTokenize (Lexer* lexer)
@@ -181,7 +268,6 @@ LexerTokenize (Lexer* lexer)
 		{
 			switch (*cur)
 				{
-					doubletok ('-', '-', '>', TArrow);
 
 				case '#': skip_comment (lexer); continue;
 				case '\0': return token (TEOF);
@@ -204,10 +290,12 @@ LexerTokenize (Lexer* lexer)
 						{
 							return number (lexer);
 						}
-					else if (isalpha (*cur))
+					if (isalpha (*cur))
 						{
 							return ident (lexer);
 						}
+
+					return symbol_2char (lexer);
 				}
 		}
 }

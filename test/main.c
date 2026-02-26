@@ -22,7 +22,10 @@ main (void)
 	RUN_TEST (test_num_table);
 
 	// actual language
-	RUN_TEST (test_lexer);
+	RUN_TEST (test_lexer_generic);
+	RUN_TEST (test_lexer_ident);
+	RUN_TEST (test_lexer_string);
+	RUN_TEST (test_lexer_char);
 
 	return UNITY_END ();
 }

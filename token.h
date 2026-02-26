@@ -3,26 +3,47 @@
 
 #include <stdint.h>
 
-#define KEYWORDS_SPEC                                                     \
-	X (TLiteral, "True")                                                  \
-	X (TLiteral, "False")
-
+// keywords
 #define KEYWORDS                                                          \
 	X (TFun, "fun")                                                       \
 	X (TRet, "ret")                                                       \
 	X (TIf, "if")                                                         \
 	X (TElse, "else")                                                     \
+	X (TFor, "for")                                                       \
 	X (TWhile, "while")                                                   \
-	X (TDo, "do")                                                         \
-	X (TFor, "for")
+	X (TDo, "do")
 
-#define TOKENS                                                            \
-	KEYWORDS                                                              \
+#define SYMBOLS_2CHARD(M)                                                 \
+	M (TRightShift, ">>", TGe, ">=")                                      \
+	M (TLeftShift, "<<", TLe, "<=")
+
+// 2 char symbols
+#define SYMBOLS_2CHAR                                                     \
 	X (TArrow, "->")                                                      \
+	X (TStarStar, "**")                                                   \
+	X (TEq, "==")                                                         \
+	X (TNEq, "!=")
+
+// these are being inserted to the keyword map
+#define KEYWORDS_SPEC                                                     \
+	X (TLiteral, "True")                                                  \
+	X (TLiteral, "False")
+
+#define SPECIAL_TOKENS                                                    \
 	X (TType, "<type>")                                                   \
 	X (TName, "<name>")                                                   \
 	X (TLiteral, "<literal>")                                             \
 	X (TEOF, "EOF")
+
+#define M(Type1, Str1, Type2, Str2)                                       \
+	X (Type1, Str1)                                                       \
+	X (Type2, Str2)
+
+#define TOKENS                                                            \
+	KEYWORDS                                                              \
+	SYMBOLS_2CHAR                                                         \
+	SYMBOLS_2CHARD (M)                                                    \
+	SPECIAL_TOKENS
 
 #define tokstart (UINT8_MAX + 1)
 
