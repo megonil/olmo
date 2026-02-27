@@ -1,5 +1,6 @@
 #include "../lexer.h"
 
+#include "../error.h"
 #include "../token.h"
 #include "unity.h"
 
@@ -13,6 +14,29 @@
 	Lexer lexer;                                                          \
 	Token token;
 
+#define assumei(i1, i2) TEST_ASSERT_EQUAL_INT (i1, i2)
+
+#define assume(T) TEST_ASSERT_EQUAL_INT (T, token.type)
+#define uassume(T)                                                        \
+	update ();                                                            \
+	assume (T)
+#define assume_end() uassume (TEOF)
+#define checkforerr(source, Err)                                          \
+	starttest (source);                                                   \
+	assumei (Err, lasterror ());                                          \
+	endtest ()
+
+void
+test_lexer_fail ()
+{
+	testh ();
+	checkforerr ("\"unfinished string", ErrUnfinishedTextLit);
+	checkforerr ("'wrong char'", ErrWrongCharLit);
+	checkforerr ("'a", ErrWrongCharLit);
+	checkforerr ("'", ErrWrongCharLit);
+	checkforerr ("\\#", ErrUnfinishedMultilineComment);
+}
+
 void
 test_lexer_comments ()
 {
@@ -20,9 +44,9 @@ test_lexer_comments ()
 	starttest ("# this is a comment\n \\# this is multiline comment\n "
 			   "something another #/ +");
 
-	TEST_ASSERT_EQUAL_INT ('+', token.type);
-	update ();
-	TEST_ASSERT_EQUAL_INT (TEOF, token.type);
+	assume ('+');
+	assume_end ();
+
 	endtest ();
 }
 void
@@ -33,9 +57,8 @@ test_lexer_string ()
 
 	TEST_ASSERT_EQUAL_STRING ("abc\n\x033\n", token.lit.value.t);
 	TEST_ASSERT_EQUAL_INT (LitText, token.lit.type);
-	update ();
 
-	TEST_ASSERT_EQUAL_INT (TEOF, token.type);
+	assume_end ();
 	endtest ();
 }
 
@@ -47,9 +70,8 @@ test_lexer_char ()
 
 	TEST_ASSERT_EQUAL_INT ('a', token.lit.value.i);
 	TEST_ASSERT_EQUAL_INT (LitChar, token.lit.type);
-	update ();
 
-	TEST_ASSERT_EQUAL_INT (TEOF, token.type);
+	assume_end ();
 	endtest ();
 
 	starttest ("'\n' '\x033'");
@@ -57,8 +79,8 @@ test_lexer_char ()
 
 	update ();
 	TEST_ASSERT_EQUAL_INT ('\x033', token.lit.value.i);
-	update ();
-	TEST_ASSERT_EQUAL_INT (TEOF, token.type);
+
+	assume_end ();
 	endtest ();
 }
 
@@ -66,13 +88,13 @@ void
 test_lexer_ident ()
 {
 	testh ();
-	starttest ("for");
 
+	starttest ("for");
 	TEST_ASSERT_EQUAL_INT (TFor, token.type);
 	endtest ();
 
 	starttest ("abcdef");
-	TEST_ASSERT_EQUAL_INT (TName, token.type);
+	assume (TName);
 	TEST_ASSERT_EQUAL_STRING ("abcdef", token.lit.value.t);
 	endtest ();
 }
@@ -124,6 +146,10 @@ test_lexer_generic ()
 
 	update ();
 	TEST_ASSERT_EQUAL_INT (TRightShift, token.type);
+	starttest ("\n\n\n\n") update ();
+	update ();
+	update ();
 
+	TEST_ASSERT_EQUAL_INT (5, lexer.line);
 	endtest ();
 }

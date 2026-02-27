@@ -1,6 +1,7 @@
 #include "lexer.h"
 
 #include "array.h"
+#include "error.h"
 #include "sourcemgr.h"
 #include "table.h"
 #include "token.h"
@@ -13,6 +14,15 @@
 
 #define cur lexer->c
 #define next() cur++
+
+#define errtok() token (TError)
+#define errort(E, ...) errorr (E, ##__VA_ARGS__) errtok ()
+
+const char* ttype_names[] = {
+#define X(Token, Str) Str,
+	TOKENS
+#undef X
+};
 
 static void
 save (Lexer* lexer)
@@ -90,7 +100,9 @@ save_escape (Lexer* lexer)
 				case '\'': c = '\''; break;
 				case '"': c = '"'; break;
 				case 'x': readhex (lexer); return;
-				case 'u': unimplemented ("wait");
+				case 'u': unimplemented ("unicode");
+				default:
+					errorr (ErrWrongEscapeSequence, lexer->line, *cur);
 				}
 		}
 	else
@@ -112,15 +124,14 @@ isln (char* c)
 #endif
 }
 
-#define flowerror()                                                       \
-	note ("value overflow/underflow at line %zu", lexer->line);
+#define flownote() note ("value overflow/underflow" at, lexer->line);
 
 static Token
 number (Lexer* lexer)
 {
 	char* start = cur;
 
-	double number = parse_double (start, &cur);
+	double number = parse_double (start, &cur, lexer->line);
 
 	switch (*cur)
 		{
@@ -128,13 +139,13 @@ number (Lexer* lexer)
 		case 'f':
 			if (number > FLT_MAX || number < FLT_MIN)
 				{
-					flowerror ();
+					flownote ();
 				}
 			return token_f ((float) number, lexer->line);
 		case 'u':
 			if (number > UINT32_MAX)
 				{
-					flowerror ();
+					flownote ();
 				}
 		default:
 			if (fractpart (number) != 0)
@@ -143,7 +154,7 @@ number (Lexer* lexer)
 				}
 			if (number > INT32_MAX || number < INT32_MIN)
 				{
-					flowerror ();
+					flownote ();
 				}
 
 			return token_i ((int32_t) number, lexer->line);
@@ -162,7 +173,7 @@ text (Lexer* lexer)
 
 	if (*cur == '\0')
 		{
-			error ("unfinished string");
+			errort (ErrUnfinishedTextLit, lexer->line);
 		}
 
 	next (); // skip "
@@ -179,11 +190,7 @@ ichar (Lexer* lexer)
 
 	if (*cur != '\'')
 		{
-			error ("too many characters in char literal");
-		}
-	else if (*cur == '\0')
-		{
-			error ("unfinished char literal");
+			errort (ErrWrongCharLit, lexer->line);
 		}
 
 	next ();
@@ -267,14 +274,14 @@ skip_multilinecomment (Lexer* lexer)
 	next ();
 	next ();
 
-	while (*cur != '#' && peek (1) != '/' && *cur != '\0')
+	while ((*cur != '#' || peek (1) != '/') && *cur != '\0')
 		{
 			next ();
 		}
 
 	if (*cur == '\0')
 		{
-			error ("unfinished multiline comment");
+			errorr (ErrUnfinishedMultilineComment, lexer->line);
 		}
 
 	// skip end of the multiline comment
@@ -303,14 +310,15 @@ LexerTokenize (Lexer* lexer)
 						}
 
 				default:
+					if (isln (cur))
+						{
+							next ();
+							lexer->line++;
+							continue;
+						}
 					if (isspace (*cur))
 						{
 							next ();
-							continue;
-						}
-					else if (isln (cur))
-						{
-							lexer->line++;
 							continue;
 						}
 

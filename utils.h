@@ -11,6 +11,7 @@
 #define fprintfln(file, fmt, ...) fprintf (file, fmt "\n", ##__VA_ARGS__)
 #define println(fmt, ...) fprintfln (stdout, fmt, ##__VA_ARGS__)
 #define eprintln(fmt, ...) fprintfln (stderr, fmt, ##__VA_ARGS__)
+#define justerror(fmt, ...) eprintln_exit ("error: " fmt, ##__VA_ARGS__)
 
 #define ok() exit (0)
 #define fail() exit (1)
@@ -27,7 +28,6 @@
 	println (fmt, ##__VA_ARGS__);                                         \
 	fail ()
 
-#define error(fmt, ...) eprintln_exit ("error: " fmt, ##__VA_ARGS__)
 #define warn(fmt, ...) eprintln ("warn: " fmt, ##__VA_ARGS__)
 #define note(fmt, ...) println ("note: " fmt, ##__VA_ARGS__)
 
@@ -49,7 +49,7 @@
 #define fractpart(val) (val - floor (val))
 
 double
-parse_double (char* start, char** end);
+parse_double (char* start, char** end, size_t line);
 
 // check for unix-style os
 #if !defined(_WIN32)                                                      \

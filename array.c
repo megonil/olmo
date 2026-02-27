@@ -18,7 +18,7 @@ ArrayInit (size_t itemsize, size_t capacity)
 
 	if (!header)
 		{
-			error ("unable to allocate header");
+			justerror ("unable to allocate header");
 		}
 
 	header->cap		 = capacity;

@@ -33,6 +33,7 @@
 	X (TType, "<type>")                                                   \
 	X (TName, "<name>")                                                   \
 	X (TLiteral, "<literal>")                                             \
+	X (TError, "<error>")                                                 \
 	X (TEOF, "EOF")
 
 #define M(Type1, Str1, Type2, Str2)                                       \
@@ -56,11 +57,7 @@ typedef enum : uint16_t
 #undef X
 } TokenType;
 
-static const char* ttype_names[] = {
-#define X(Token, Str) Str,
-	TOKENS
-#undef X
-};
+extern const char* ttype_names[];
 
 #define Tt2Str(tt) ttype_names[tt - tokstart]
 
@@ -122,6 +119,7 @@ typedef struct
 			= {.value = {.t = Value},                                     \
 			   .type  = LitName }                                          \
 	}
+
 #define token_c(Value, Line) token_l (i, Value, LitChar, Line)
 
 #endif // !olmo_token_h

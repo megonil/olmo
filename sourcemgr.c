@@ -13,7 +13,7 @@ readfile (const char* filename)
 
 	if (file == NULL)
 		{
-			error ("cannot open file %s", filename);
+			justerror ("cannot open file %s", filename);
 		}
 
 	fseek (file, 0L, SEEK_END);
@@ -27,7 +27,7 @@ readfile (const char* filename)
 
 	if (bytes_read < file_size)
 		{
-			error ("while reading file %s", filename);
+			justerror ("while reading file %s", filename);
 		}
 
 	fclose (file);

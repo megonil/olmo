@@ -21,7 +21,7 @@ source = files(
 
 executable('olmo', source + files('main.c'), install: true, dependencies: deps)
 
-test_source = files('test/main.c')
+test_source = files('test/lexer.c', 'test/main.c', 'test/table.c')
 test_executable = executable('olmotest', source + test_source, dependencies: deps + unity_dep)
 
 test('olmotest', test_executable)

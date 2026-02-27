@@ -1,5 +1,4 @@
-#include "lexer.c"
-#include "table.c"
+#include "test.h"
 #include "unity.h"
 #include "unity_internals.h"
 
@@ -27,6 +26,7 @@ main (void)
 	RUN_TEST (test_lexer_string);
 	RUN_TEST (test_lexer_char);
 	RUN_TEST (test_lexer_comments);
+	RUN_TEST (test_lexer_fail);
 
 	return UNITY_END ();
 }
