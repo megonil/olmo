@@ -1,5 +1,5 @@
-#ifndef olmo_error_h
-#define olmo_error_h
+#ifndef crit_error_h
+#define crit_error_h
 #include "array.h"
 
 #include <stddef.h>
@@ -42,4 +42,4 @@ extern Err* errors_produced;
 #define lasterror() errors_produced[Len (errors_produced) - 1]
 
 #undef ln
-#endif // !olmo_error_h
+#endif // !crit_error_h

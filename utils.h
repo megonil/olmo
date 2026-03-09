@@ -1,5 +1,5 @@
-#ifndef olmo_utils_h
-#define olmo_utils_h
+#ifndef crit_utils_h
+#define crit_utils_h
 
 #include "flag.h"
 
@@ -18,7 +18,7 @@
 
 #define True 1
 #define False 0
-#define bool int
+#define Bool int
 
 #define println_exit(fmt, ...)                                            \
 	println (fmt, ##__VA_ARGS__);                                         \
@@ -56,32 +56,32 @@ parse_double (char* start, char** end, size_t line);
 	&& (defined(__unix__) || defined(__unix)                              \
 		|| (defined(__APPLE__) && defined(__MACH__)))
 // posix compliant
-#define OLMO_UNIX
-#define OLMO_USE_POSIX
+#define CRIT_UNIX
+#define CRIT_USE_POSIX
 
 #if defined(__linux) || defined(__linux__)
-#define OLMO_LINUX
+#define CRIT_LINUX
 #endif //  defined(__linux) || defined(__linux__)
 
 #if defined(__APPLE__) && defined(__MACH__) && defined(TARGET_OS_MAC)
-#define OLMO_MACOS
+#define CRIT_MACOS
 #endif
 
 #endif
 
 #if defined(__CYGWIN__) && !defined(_WIN32)
 // Cygwin POSIX under Microsoft Windows.
-#define OLMO_CYGWIN
+#define CRIT_CYGWIN
 #endif
 
 #if defined(_WIN64)
 // Microsoft Windows (64-bit)
-#define OLMO_WINDOWS64
-#define OLMO_WINDOWS
+#define CRIT_WINDOWS64
+#define CRIT_WINDOWS
 #elif defined(_WIN32)
 // Microsoft Windows (32-bit)
-#define OLMO_WINDOWS32
-#define OLMO_WINDOWS
+#define CRIT_WINDOWS32
+#define CRIT_WINDOWS
 #endif
 
-#endif // !olmo_utils_h
+#endif // !crit_utils_h

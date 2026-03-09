@@ -1,5 +1,5 @@
-#ifndef olmo_sourcemgr_h
-#define olmo_sourcemgr_h
+#ifndef crit_sourcemgr_h
+#define crit_sourcemgr_h
 
 typedef struct
 {
@@ -15,4 +15,4 @@ SourceMgrInit (SourceMgr* mgr, const char* filename);
 void
 SourceMgrNewFile (SourceMgr* mgr, const char* filename);
 
-#endif // !olmo_sourcemgr_h
+#endif // !crit_sourcemgr_h

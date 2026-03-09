@@ -1,5 +1,5 @@
-#ifndef olmo_lexer_h
-#define olmo_lexer_h
+#ifndef crit_lexer_h
+#define crit_lexer_h
 
 #include "sourcemgr.h"
 #include "token.h"
@@ -30,4 +30,4 @@ LexerFromSource (Lexer* lexer, char* source);
 void
 LexerDestroy (Lexer* lexer);
 
-#endif // !olmo_lexer_h
+#endif // !crit_lexer_h

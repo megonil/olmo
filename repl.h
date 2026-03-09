@@ -1,7 +1,7 @@
-#ifndef olmo_repl_h
-#define olmo_repl_h
+#ifndef crit_repl_h
+#define crit_repl_h
 
 void
 repl ();
 
-#endif // !olmo_repl_h
+#endif // !crit_repl_h

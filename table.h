@@ -1,5 +1,5 @@
-#ifndef olmo_table_h
-#define olmo_table_h
+#ifndef crit_table_h
+#define crit_table_h
 
 // open addressing
 // linear probing
@@ -78,4 +78,4 @@ define_table (Num, int, int);
 		}                                                                  \
 	while (0)
 
-#endif // !olmo_table_h
+#endif // !crit_table_h

@@ -1,4 +1,4 @@
-project('olmo', 'c', default_options: 'c_std=gnu11')
+project('crit', 'c', default_options: 'c_std=gnu11')
 
 unity_dep = dependency('unity')
 
@@ -19,9 +19,9 @@ source = files(
 	'value.c',
 )
 
-executable('olmo', source + files('main.c'), install: true, dependencies: deps)
+executable('crit', source + files('main.c'), install: true, dependencies: deps)
 
 test_source = files('test/lexer.c', 'test/main.c', 'test/table.c')
-test_executable = executable('olmotest', source + test_source, dependencies: deps + unity_dep)
+test_executable = executable('crittest', source + test_source, dependencies: deps + unity_dep)
 
-test('olmotest', test_executable)
+test('crit', test_executable)

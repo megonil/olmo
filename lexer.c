@@ -114,12 +114,12 @@ save_escape (Lexer* lexer)
 	ArrayPush (lexer->buffer, c);
 }
 
-static bool
+static Bool
 isln (char* c)
 {
-#ifdef OLMO_UNIX
+#ifdef CRIT_UNIX
 	return *c == '\n';
-#elif defined(OLMO_WINDOWS)
+#elif defined(CRIT_WINDOWS)
 	return *c == '\r' && *(c + 1) == '\n'
 #endif
 }

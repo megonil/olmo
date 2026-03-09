@@ -1,5 +1,5 @@
-#ifndef olmo_token_h
-#define olmo_token_h
+#ifndef crit_token_h
+#define crit_token_h
 
 #include <stdint.h>
 
@@ -122,4 +122,4 @@ typedef struct
 
 #define token_c(Value, Line) token_l (i, Value, LitChar, Line)
 
-#endif // !olmo_token_h
+#endif // !crit_token_h

@@ -1,5 +1,5 @@
-#ifndef olmo_Array_h
-#define olmo_Array_h
+#ifndef crit_Array_h
+#define crit_Array_h
 
 #include <stddef.h>
 
@@ -51,4 +51,4 @@ ArrayFree (void* array);
 void
 ArrayPrint (void* array, PrintFunction fn);
 
-#endif // !olmo_Array_h
+#endif // !crit_Array_h
